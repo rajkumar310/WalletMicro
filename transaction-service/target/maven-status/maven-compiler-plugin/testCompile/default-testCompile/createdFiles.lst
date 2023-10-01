@@ -1,0 +1,4 @@
+com\transaction\service\repositorytest\TransactionRepositoryTest.class
+com\transaction\service\controllerest\TransactionControllerTest.class
+com\transaction\service\servicetest\TransactionServiceTest.class
+com\transaction\service\TransactionServiceApplicationTests.class

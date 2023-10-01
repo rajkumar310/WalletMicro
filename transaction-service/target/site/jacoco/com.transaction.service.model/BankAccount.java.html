@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BankAccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transaction-service</a> &gt; <a href="index.source.html" class="el_package">com.transaction.service.model</a> &gt; <span class="el_source">BankAccount.java</span></div><h1>BankAccount.java</h1><pre class="source lang-java linenums">package com.transaction.service.model;
+
+import org.springframework.stereotype.Controller;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+<span class="pc" id="L20">@Setter</span>
+<span class="fc" id="L21">@NoArgsConstructor</span>
+<span class="nc" id="L22">@AllArgsConstructor</span>
+<span class="nc" id="L23">@ToString</span>
+@Entity
+@Controller
+public class BankAccount {
+	 @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L29">	    private Long id;</span>
+
+	 @NotNull(message = &quot;Account Holder's Name is required&quot;)
+<span class="nc" id="L32">	    private String accountHolderName;</span>
+
+	    @NotNull(message = &quot;Mobile number is required&quot;)
+	    @Pattern(regexp = &quot;\\d{10}&quot;, message = &quot;Please provide a valid 10-digit mobile number&quot;)
+<span class="nc" id="L36">	    private String mobileNumber;</span>
+
+	    @NotNull(message = &quot;Account Type is required&quot;)
+<span class="nc" id="L39">	    private String accountType;</span>
+
+	    @NotNull(message = &quot;Account Number is required&quot;)
+<span class="nc" id="L42">	    private String accountNumber;</span>
+
+	    @NotNull(message = &quot;IFSC Code is required&quot;)
+<span class="nc" id="L45">	    private String ifsccode;</span>
+	    
+	    @NotNull(message = &quot;ATM card number is required&quot;)
+<span class="nc" id="L48">	    private String atmCardNumber;</span>
+
+	    @NotNull(message = &quot;BankAccount Name is required&quot;)
+<span class="nc" id="L51">	    private String bankName;</span>
+
+	    @Digits(integer = 4, fraction = 0, message = &quot;ATM pin must be a 4-digit number&quot;)
+	    @Column(name = &quot;atm_pin&quot;)
+<span class="nc" id="L55">	    private Integer atmPin;</span>
+
+
+	    @Column(name = &quot;balance&quot;)
+<span class="nc" id="L59">	    private Double balance;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

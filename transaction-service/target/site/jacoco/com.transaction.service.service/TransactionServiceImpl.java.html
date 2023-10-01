@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transaction-service</a> &gt; <a href="index.source.html" class="el_package">com.transaction.service.service</a> &gt; <span class="el_source">TransactionServiceImpl.java</span></div><h1>TransactionServiceImpl.java</h1><pre class="source lang-java linenums">package com.transaction.service.service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.transaction.service.dto.AddMoneyRequest;
+import com.transaction.service.dto.BankAccountDTO;
+import com.transaction.service.exception.AuthenticationFailedException;
+import com.transaction.service.exception.InvalidAccountIdException;
+import com.transaction.service.exception.InvalidAmountException;
+import com.transaction.service.exception.NotFoundException;
+import com.transaction.service.model.BankAccount;
+import com.transaction.service.model.Transaction;
+import com.transaction.service.model.WalletAccount;
+import com.transaction.service.repository.BankAccountRepository;
+import com.transaction.service.repository.TransactionRepository;
+import com.transaction.service.repository.WalletAccountRepository;
+
+@Service
+<span class="fc" id="L25">public class TransactionServiceImpl implements TransactionService {</span>
+
+    @Autowired
+    private TransactionRepository transactionRepo;
+
+    @Autowired
+    private WalletAccountRepository walletAccountRepo;
+
+    @Autowired
+    private BankAccountRepository bankAccountRepo;
+
+    @Override
+    public Transaction sendingtransaction(Transaction transaction, Long walletAccountId, int walletPin)
+            throws InvalidAccountIdException, AuthenticationFailedException, InvalidAmountException {
+<span class="fc" id="L39">        Optional&lt;WalletAccount&gt; senderWalletAccount = walletAccountRepo.findById(walletAccountId);</span>
+
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (senderWalletAccount.isEmpty()) {</span>
+<span class="nc" id="L42">            throw new InvalidAccountIdException(&quot;Sender Wallet Account not found&quot;);</span>
+        }
+
+<span class="fc" id="L45">        WalletAccount retrievedSenderWalletAccount = senderWalletAccount.get();</span>
+
+<span class="fc" id="L47">        Optional&lt;WalletAccount&gt; receiverWalletAccount = walletAccountRepo.findById(transaction.getSenderorReceiverid());</span>
+
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (receiverWalletAccount.isEmpty()) {</span>
+<span class="nc" id="L50">            throw new InvalidAccountIdException(&quot;Receiver Wallet Account not found&quot;);</span>
+        }
+
+<span class="pc bpc" id="L53" title="3 of 6 branches missed.">        if (retrievedSenderWalletAccount.getBalance() &lt; transaction.getAmount() || transaction.getAmount() &lt; 100 || transaction.getAmount() &gt; 100000) {</span>
+<span class="nc" id="L54">            throw new InvalidAmountException(&quot;Insufficient Balance&quot;);</span>
+        }
+        
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (retrievedSenderWalletAccount.getWalletPin() != walletPin) {</span>
+<span class="nc" id="L58">            throw new AuthenticationFailedException(&quot;Authentication Failed Check the Wallet PIN&quot;);</span>
+        }
+
+<span class="fc" id="L61">        retrievedSenderWalletAccount.setBalance(retrievedSenderWalletAccount.getBalance() - transaction.getAmount());</span>
+<span class="fc" id="L62">        transaction.setWalletAccount(retrievedSenderWalletAccount);</span>
+
+<span class="fc" id="L64">        return transactionRepo.save(transaction);</span>
+    }
+
+    @Override
+    public Transaction receivingtransaction(Transaction transaction, Long receivingWalletAccountId) {
+<span class="nc" id="L69">        Optional&lt;WalletAccount&gt; walletAccount = walletAccountRepo.findById(receivingWalletAccountId);</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (walletAccount.isEmpty()) {</span>
+<span class="nc" id="L72">            throw new InvalidAccountIdException(&quot;Receiver Wallet Account not found&quot;);</span>
+        }
+
+<span class="nc" id="L75">        WalletAccount retrievedWalletAccount = walletAccount.get();</span>
+<span class="nc" id="L76">        retrievedWalletAccount.setBalance(transaction.getAmount() + retrievedWalletAccount.getBalance());</span>
+<span class="nc" id="L77">        walletAccountRepo.save(retrievedWalletAccount);</span>
+<span class="nc" id="L78">        transaction.setWalletAccount(retrievedWalletAccount);</span>
+
+<span class="nc" id="L80">        return transactionRepo.save(transaction);</span>
+    }
+
+    @Override
+    public Transaction updateTransaction(Transaction transaction) throws NotFoundException {
+<span class="fc" id="L85">        Optional&lt;Transaction&gt; retrievedTransaction = transactionRepo.findById(transaction.getTransactionid());</span>
+
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (retrievedTransaction.isEmpty()) {</span>
+<span class="fc" id="L88">            throw new NotFoundException(&quot;Transaction not found&quot;);</span>
+        }
+
+<span class="nc" id="L91">        return transactionRepo.save(transaction);</span>
+    }
+
+    @Override
+    public Transaction findTransactionById(Long transactionId) throws NotFoundException {
+<span class="nc" id="L96">        Optional&lt;Transaction&gt; existingTransaction = transactionRepo.findById(transactionId);</span>
+
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (existingTransaction.isEmpty()) {</span>
+<span class="nc" id="L99">            throw new NotFoundException(&quot;Transaction not found&quot;);</span>
+        }
+
+<span class="nc" id="L102">        return existingTransaction.get();</span>
+    }
+
+    @Override
+    public List&lt;Transaction&gt; findAllTransactionByWalletAccountId(Long walletAccountId) throws NotFoundException {
+<span class="nc" id="L107">        List&lt;Transaction&gt; transactions = transactionRepo.findAllByWalletAccountId(walletAccountId);</span>
+
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (transactions.isEmpty()) {</span>
+<span class="nc" id="L110">            throw new NotFoundException(&quot;Transactions not found&quot;);</span>
+        }
+
+<span class="nc" id="L113">        List&lt;Transaction&gt; sortedTransactions = transactions</span>
+<span class="nc" id="L114">                .stream()</span>
+<span class="nc" id="L115">                .sorted(Comparator.comparing(Transaction::getTransactionDate).reversed())</span>
+<span class="nc" id="L116">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L118">        return sortedTransactions;</span>
+    }
+
+
+    @Override
+    public Transaction deleteTransactionBytransactionId(Long transactionId) throws NotFoundException {
+<span class="nc" id="L124">        return transactionRepo.findById(transactionId)</span>
+<span class="nc" id="L125">                .map(existingTransaction -&gt; {</span>
+<span class="nc" id="L126">                    transactionRepo.delete(existingTransaction);</span>
+<span class="nc" id="L127">                    return existingTransaction;</span>
+                })
+<span class="nc" id="L129">                .orElseThrow(() -&gt; new NotFoundException(&quot;Transaction not found&quot;));</span>
+    }
+
+    @Override
+    public Transaction addmoneyfrombank(AddMoneyRequest addMoneyRequest)
+            throws InvalidAmountException, InvalidAccountIdException, AuthenticationFailedException {
+<span class="nc" id="L135">        Transaction transaction = addMoneyRequest.getTransaction();</span>
+<span class="nc" id="L136">        BankAccountDTO bankAccount = addMoneyRequest.getBankAccount();</span>
+
+<span class="nc" id="L138">        Optional&lt;WalletAccount&gt; walletAccount = walletAccountRepo.findById(transaction.getSenderorReceiverid());</span>
+<span class="nc" id="L139">        Optional&lt;BankAccount&gt; bank = bankAccountRepo.findByAccountNumber(bankAccount.getAccountNumber());</span>
+
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (bank.isEmpty()) {</span>
+<span class="nc" id="L142">            throw new InvalidAccountIdException(&quot;Bank Account not found&quot;);</span>
+        }
+
+<span class="nc" id="L145">        BankAccount retrievedBankAccount = bank.get();</span>
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (!bankAccount.getAccountNumber().equals(retrievedBankAccount.getAccountNumber())</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">                || !bankAccount.getIfsccode().equals(retrievedBankAccount.getIfsccode())</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                || !bankAccount.getAtmCardNumber().equals(retrievedBankAccount.getAtmCardNumber())</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                || bankAccount.getAtmPin() != retrievedBankAccount.getAtmPin()) {</span>
+<span class="nc" id="L151">            throw new AuthenticationFailedException(&quot;Authentication Failed Check the Bank Credentials&quot;);</span>
+        }
+
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        if (retrievedBankAccount.getBalance() &lt; transaction.getAmount()) {</span>
+<span class="nc" id="L155">            throw new InvalidAmountException(&quot;Insufficient balance in the bank account Check the Bank Account Balance&quot;);</span>
+        }
+
+<span class="nc bnc" id="L158" title="All 6 branches missed.">        if (walletAccount.isEmpty() || transaction.getAmount() &lt; 100 || transaction.getAmount() &gt; 100000) {</span>
+<span class="nc" id="L159">            throw new InvalidAccountIdException(&quot;Wallet Account Not found Check Your Profile to View&quot;);</span>
+        }
+
+<span class="nc" id="L162">        walletAccount.get().setBalance(transaction.getAmount() + walletAccount.get().getBalance());</span>
+<span class="nc" id="L163">        walletAccountRepo.save(walletAccount.get());</span>
+
+<span class="nc" id="L165">        retrievedBankAccount.setBalance(retrievedBankAccount.getBalance() - transaction.getAmount());</span>
+<span class="nc" id="L166">        transaction.setWalletAccount(walletAccount.get());</span>
+
+<span class="nc" id="L168">        return transactionRepo.save(transaction);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

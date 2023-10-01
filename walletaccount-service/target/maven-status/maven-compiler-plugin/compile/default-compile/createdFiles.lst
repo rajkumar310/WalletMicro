@@ -1,0 +1,12 @@
+com\walletaccount\service\service\WalletAccountServiceImpl.class
+com\walletaccount\service\model\Transaction.class
+com\walletaccount\service\model\WalletAccount.class
+com\walletaccount\service\exceptions\GlobalExceptionHandler.class
+com\walletaccount\service\exceptions\NotFoundException.class
+com\walletaccount\service\controller\WalletAccountController.class
+com\walletaccount\service\service\WalletAccountService.class
+com\walletaccount\service\dto\LoginData.class
+com\walletaccount\service\exceptions\AlreadyExistException.class
+com\walletaccount\service\WalletaccountServiceApplication.class
+com\walletaccount\service\exceptions\InvalidCredentialsException.class
+com\walletaccount\service\repository\WalletAccountRepository.class

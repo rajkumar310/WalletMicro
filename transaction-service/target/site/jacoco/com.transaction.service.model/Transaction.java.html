@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transaction-service</a> &gt; <a href="index.source.html" class="el_package">com.transaction.service.model</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">package com.transaction.service.model;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter
+<span class="pc" id="L25">@Setter</span>
+<span class="fc" id="L26">@NoArgsConstructor</span>
+<span class="nc" id="L27">@AllArgsConstructor</span>
+<span class="nc" id="L28">@ToString</span>
+public class Transaction {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="fc" id="L33">    private Long transactionid;</span>
+
+    @NotNull(message = &quot;Transaction Type is required&quot;)
+<span class="nc" id="L36">    private String transactionType;</span>
+
+    @NotNull(message = &quot;Transaction Date is required&quot;)
+<span class="nc" id="L39">    private LocalDate transactionDate;</span>
+
+    @NotNull(message = &quot;Transaction Time is required&quot;)
+<span class="nc" id="L42">    private LocalTime transactionTime;</span>
+   
+
+    @NotNull(message = &quot;Sender or Receiverid is required&quot;)
+<span class="fc" id="L46">    private Long senderorReceiverid;</span>
+    
+   
+    @Positive(message = &quot;Amount must be positive&quot;)
+<span class="fc" id="L50">    private double amount;</span>
+
+    @ManyToOne(fetch =FetchType.EAGER)
+    @JsonIgnore
+    @JoinColumn(name = &quot;wallet_account_id&quot;)
+<span class="nc" id="L55">    private WalletAccount walletAccount;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

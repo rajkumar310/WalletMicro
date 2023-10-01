@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transaction-service</a> &gt; <a href="index.source.html" class="el_package">com.transaction.service.controller</a> &gt; <span class="el_source">TransactionController.java</span></div><h1>TransactionController.java</h1><pre class="source lang-java linenums">package com.transaction.service.controller;
+
+import com.transaction.service.dto.AddMoneyRequest;
+
+import com.transaction.service.exception.AuthenticationFailedException;
+import com.transaction.service.exception.InvalidAccountIdException;
+import com.transaction.service.exception.InvalidAmountException;
+import com.transaction.service.exception.NotFoundException;
+import com.transaction.service.model.Transaction;
+import com.transaction.service.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/transaction&quot;)
+@CrossOrigin
+<span class="fc" id="L21">public class TransactionController {</span>
+
+    @Autowired
+    private TransactionService transactionService;
+
+    @PostMapping(&quot;/sendmoney&quot;)
+    public ResponseEntity&lt;Transaction&gt; sendTransaction(@RequestBody Transaction transaction,
+                                                       @RequestParam Long walletAccountId,
+                                                       @RequestParam int walletPin) throws InvalidAccountIdException,AuthenticationFailedException,InvalidAmountException{
+<span class="fc" id="L30">        Transaction sentTransaction = transactionService.sendingtransaction(transaction, walletAccountId, walletPin);</span>
+<span class="fc" id="L31">        return new ResponseEntity&lt;&gt;(sentTransaction, HttpStatus.CREATED);</span>
+    }
+
+    @PostMapping(&quot;/receivemoney&quot;)
+    public ResponseEntity&lt;Transaction&gt; receiveTransaction(@RequestBody Transaction transaction,
+                                                          @RequestParam Long receivingWalletAccountId) {
+<span class="fc" id="L37">        Transaction receivedTransaction = transactionService.receivingtransaction(transaction, receivingWalletAccountId);</span>
+<span class="fc" id="L38">        return new ResponseEntity&lt;&gt;(receivedTransaction, HttpStatus.CREATED);</span>
+    }
+
+    @PutMapping(&quot;/update&quot;)
+    public ResponseEntity&lt;Transaction&gt; updateTransaction(@RequestBody Transaction transaction) {
+        try {
+<span class="fc" id="L44">            Transaction updatedTransaction = transactionService.updateTransaction(transaction);</span>
+<span class="fc" id="L45">            return new ResponseEntity&lt;&gt;(updatedTransaction, HttpStatus.OK);</span>
+<span class="fc" id="L46">        } catch (NotFoundException e) {</span>
+<span class="fc" id="L47">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+    }
+
+    @GetMapping(&quot;/gettransaction&quot;)
+    public ResponseEntity&lt;Transaction&gt; getTransactionById(@RequestParam Long transactionId) {
+        try {
+<span class="fc" id="L54">            Transaction transaction = transactionService.findTransactionById(transactionId);</span>
+<span class="fc" id="L55">            return new ResponseEntity&lt;&gt;(transaction, HttpStatus.OK);</span>
+<span class="fc" id="L56">        } catch (NotFoundException e) {</span>
+<span class="fc" id="L57">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+    }
+
+    @GetMapping(&quot;/getalltransactions&quot;)
+    public ResponseEntity&lt;List&lt;Transaction&gt;&gt; getAllTransactionsByWalletAccountId(@RequestParam Long walletAccountId) {
+        try {
+<span class="fc" id="L64">            List&lt;Transaction&gt; transactions = transactionService.findAllTransactionByWalletAccountId(walletAccountId);</span>
+<span class="fc" id="L65">            return new ResponseEntity&lt;&gt;(transactions, HttpStatus.OK);</span>
+<span class="fc" id="L66">        } catch (NotFoundException e) {</span>
+<span class="fc" id="L67">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+    }
+
+    @DeleteMapping(&quot;/delete/transaction&quot;)
+    public ResponseEntity&lt;Transaction&gt; deleteTransactionById(@RequestParam Long transactionId) {
+        try {
+<span class="fc" id="L74">            Transaction deletedTransaction = transactionService.deleteTransactionBytransactionId(transactionId);</span>
+<span class="fc" id="L75">            return new ResponseEntity&lt;&gt;(deletedTransaction, HttpStatus.OK);</span>
+<span class="fc" id="L76">        } catch (NotFoundException e) {</span>
+<span class="fc" id="L77">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+    }
+
+    @PostMapping(&quot;/addmoneyfrombank&quot;)
+    public ResponseEntity&lt;Transaction&gt; addMoneyFromBank(@RequestBody AddMoneyRequest addMoneyRequest) {
+        try {
+<span class="fc" id="L84">            Transaction addedMoneyTransaction = transactionService.addmoneyfrombank(addMoneyRequest);</span>
+<span class="fc" id="L85">            return new ResponseEntity&lt;&gt;(addedMoneyTransaction, HttpStatus.CREATED);</span>
+<span class="fc" id="L86">        } catch (InvalidAmountException | InvalidAccountIdException | AuthenticationFailedException e) {</span>
+<span class="fc" id="L87">            return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
